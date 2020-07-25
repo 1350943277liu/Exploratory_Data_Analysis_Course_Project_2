@@ -16,3 +16,25 @@ SCC <- as_tibble(SCC)
 
 NEI$type <- tolower(NEI$type)
 NEI$type <- sub("-", "", NEI$type)
+
+
+coalcomb <- str_detect(SCC$EI.Sector, "^Fuel Comb.*Coal$")
+SCC_coal <- as.character(SCC$SCC)[coalcomb]
+
+NEI_coal <- filter(NEI, SCC %in% SCC_coal)
+
+
+NEI_coal <-  group_by(NEI_coal, year)
+pm25.coal <- summarise(NEI_coal, emission=sum(Emissions)) 
+
+
+##
+
+p <- ggplot(pm25.coal, aes(as.factor(year), emission))
+p + geom_col() + 
+        labs(title = "Coal Combustion-related PM 2.5 Change") +
+        xlab("Year") +
+        ylab("Emission (tons)")
+
+
+
